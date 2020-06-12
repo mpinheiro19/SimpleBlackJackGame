@@ -1,16 +1,34 @@
 suit = ('Copas','Paus', 'Ouros', 'Espadas')
 rank = ('Dois','Três','Quatro','Cinco','Seis','Sete','Oito','Nove','Dez','Valete', 'Dama', 'Rei','Ás')
-value = {'Dois':2,'Três':3,'Quatro':4,'Cinco':5,'Seis':6,'Sete':7,'Oito':8,'Nove':9,'Dez':10,'Valete':10, 'Dama':10, 'Rei':10,'Ás':10}
+value = {'Dois':2,'Três':3,'Quatro':4,'Cinco':5,'Seis':6,'Sete':7,'Oito':8,'Nove':9,'Dez':10,'Valete':10, 'Dama':10, 'Rei':10,'Ás':11}
 import random
 
 class Hand:
-    pass
+    def __init__(self):
+        self.cards_in_hand = []
+        self.value = 0
+        self.aces_count = 0
+    
+    def pick_card(self,card):
+        self.cards_in_hand.append(card)
+        self.value += value[card.rank]
+        if card.rank == 'Ás':
+            self.aces_count += 1
+    def adjust_for_ace_value(self):
+        if self.value > 21 and self.aces_count:
+            self.value -= 10
+            self.aces_count -= 1     
 
 class Chips:
-    pass
+    def __init__(self,chips_amount = 1000):
+        self.chips_amount = chips_amount
+        self.bet = 0
+    def win_bet(self):
+        self.chips_amount += self.bet
+    def lose_bet(self):
+        self.chips_amount -= self.bet
 
-class Decks:
-    
+class Decks:  
     def __init__(self):
 
         self.deck = []
