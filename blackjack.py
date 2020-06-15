@@ -4,6 +4,7 @@ value = {'Dois':2,'Três':3,'Quatro':4,'Cinco':5,'Seis':6,'Sete':7,'Oito':8,'Nov
 import random
 playing = True
 
+
 class Hand:
     def __init__(self):
         self.cards_in_hand = []
@@ -21,7 +22,7 @@ class Hand:
             self.aces_count -= 1     
 
 class Chips:
-    def __init__(self,chips_amount = 1000):
+    def __init__(self,chips_amount=500):
         self.chips_amount = chips_amount
         self.bet = 0
     def win_bet(self):
@@ -37,6 +38,9 @@ class Decks:
             for j in rank:
                 self.deck.append(Card(i,j))
     
+    def __len__(self):
+        return len(self.deck)
+
     def __str__(self):
         deck_comp = ''
         for card in self.deck:
@@ -59,12 +63,11 @@ class Card:
     def __str__(self):
         return self.rank+" de "+self.suit
 
-
-def take_bet(total_disp):
+def take_bet(chips):
     while True:
         try:
-            val = int(input("Quanto deseja apostar? "))
-            if val > total_disp:
+            chips.bet = int(input("Quanto deseja apostar? "))
+            if chips.bet > chips.chips_amount:
                 print("Opa, você não tem isso tudo!")
                 continue
             else:
@@ -87,17 +90,80 @@ def hit_stand(Decks, Hand):
         choice = input("Digite 'H' para pedir carta e ou 'S' para encerrar seu turno: ")
         if choice[0].lower() == 'h':
             hit(Decks,Hand)
-            show_hand(player_hand)
-            print() 
+            show_initial(player_hand,dealer_hand)
+            player_hand.adjust_for_ace_value()
+            if player_hand.value >=21:
+                playing = False               
         elif choice[0].lower() == 's':
             print("Ok. Agora é o turno da casa.")
             playing = False
         else:
             print('Ops, tente novamente.')
-            continue
+            continue        
+
+def show_initial(player,dealer):
+    print("\nMão do dealer: ({})".format(value[dealer_hand.cards_in_hand[1].rank]))
+    print(" <Carta virada para baixo>")
+    print(" ",dealer_hand.cards_in_hand[1])
+    print(f"\nMão do jogador: ({player_hand.value})", *player_hand.cards_in_hand, sep='\n ')
+
+def jogar_novamente():
+    escolha = input("Deseja jogar novamente? s/n: ")
+    return escolha[0].lower()
+def dealer_turn(deck,hand):
+    while dealer_hand.value <= 17:
+        dealer_hand.pick_card(deck.deal()) 
+        dealer_hand.adjust_for_ace_value()
+
+def show_all(player, dealer):
+    print(f"\nMão da casa: ({dealer_hand.value})", *dealer_hand.cards_in_hand, sep='\n ')
+    print(f"\nMão do jogador: ({player_hand.value})", *player_hand.cards_in_hand, sep='\n ')    
 
 
-deck = Decks()
-deck.shuffle_deck()
-player_hand = Hand()
-hit_stand(deck, player_hand)
+if __name__ == '__main__':
+    while True:
+        deck = Decks()
+        deck.shuffle_deck()
+        chips = Chips()
+
+        while len(deck)>10 and chips.chips_amount >0:
+            player_hand = Hand()
+            dealer_hand = Hand()
+
+            dealer_hand.pick_card(deck.deal())
+            dealer_hand.pick_card(deck.deal())
+
+            player_hand.pick_card(deck.deal())
+            player_hand.pick_card(deck.deal())
+
+            show_initial(player_hand, dealer_hand)
+            
+            take_bet(chips)
+
+            while playing:
+                hit_stand(deck, player_hand)
+                    
+            if player_hand.value <= 21:
+                dealer_turn(deck, dealer_hand)
+                show_all(player_hand, dealer_hand)
+            
+            if player_hand.value > 21:
+                print("\nJogador estourou\nVitória da Casa!")
+                chips.lose_bet()
+                #print("Saldo atual em: ", chips.chips_amount)
+            elif player_hand.value > dealer_hand.value and player_hand.value <= 21:
+                print("Jogador Venceu!")
+                chips.win_bet()
+            elif player_hand.value == dealer_hand.value:
+                print("Empate!\nNinguém leva!")
+            else:
+                print("Jogador Perdeu!")
+                chips.lose_bet()            
+            print("Saldo atual em: ", chips.chips_amount)
+            rep = jogar_novamente()
+            if rep == 's':   
+                playing = True
+                continue            
+            else:
+                print("Obrigado por jogar.\nAté a próxima.")
+        break        
