@@ -1,5 +1,5 @@
 # Simple Blackjack Game
-A 50/50 *almost* code along OOP practice and VS Code features for learning purposes
+An *almost* code along OOP practice and VS Code features for learning purposes
 
 ## This project is part of Jose Portilla Python 3 Bootcamp:
 Link to Udemy course [click here](https://www.udemy.com/share/101W94CUYZdlxTTHg=/)
@@ -8,8 +8,10 @@ Link to Udemy course [click here](https://www.udemy.com/share/101W94CUYZdlxTTHg=
 Some functions to implement the logic part of the game:
 - [x] Classes
 - [x] Methods
-- [ ] Functions
-- [ ] Logic
+- [x] Functions
+- [x] Logic
+- [ ] Polishment
+- [ ] PyGame???
 
 ### Initializing
 The blackjack.py file has the full python code
